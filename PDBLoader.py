@@ -37,6 +37,11 @@ class PDBLoader(object):
 
 
     def retrieve_pdb(self):
+        """
+        Retrieves the indicated pdb file from the standardized url structure. Writes the file to the indicated directory
+        from the constructor with the name of id.pdb.
+        :return: None
+        """
         response = requests.get(self.structure_path + self.id + ".pdb")
         filename = self.path + self.id + ".pdb"
         f = open(filename, 'wb')
