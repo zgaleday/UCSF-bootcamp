@@ -7,7 +7,12 @@ class ParsePDB(object):
     def __init__(self, filepath):
         """Simple constructor just requiring the filepath for the pdb file of interest"""
         self.pdb_path = filepath
-        with open(filepath) as f:
+        self.load_atoms()
+
+
+    def load_atoms(self):
+        """Loads the atoms into a dataframe ready for future computation."""
+        with open(self.pdb_path) as f:
             atoms = [self.parse_ATOM(line)[1:] for line in f if line.split()[0] == "ATOM"]
         #Column names corrispond to the exact ontology defined at:
         #http://www.wwpdb.org/documentation/file-format-content/format33/sect9.html#ATOM
