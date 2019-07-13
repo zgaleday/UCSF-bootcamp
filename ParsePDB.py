@@ -4,24 +4,24 @@ import numpy as np
 
 class ParsePDB(object):
     """Generic class to parse file of pdb format.
-    Relevent documentation to load_atoms and parse_ATOM can be found at:
+    Relevant documentation to load_atoms and parse_ATOM can be found at:
     http://www.wwpdb.org/documentation/file-format-content/format33/sect9.html#ATOM
     """
 
 
     def __init__(self, filepath):
-        """Simple constructor just requiring the filepath for the pdb file of interest"""
+        """Simple constructor just requiring the file path for the pdb file of interest"""
         self.pdb_path = filepath
         self.atoms = self.load_atoms()
 
 
     def load_atoms(self):
         """Loads the atoms into a dataframe ready for future computation.
-        :return A pandas dataframe with the atoms and relevent columns as defined by pdb documentation (see above).
+        :return A pandas dataframe with the atoms and relevant columns as defined by pdb documentation (see above).
         """
         with open(self.pdb_path) as f:
             atoms = [self.parse_ATOM(line)[1:] for line in f if line.split()[0] == "ATOM"]
-        #Column names corrispond to the exact ontology defined in cited documentation.
+        #Column names correspond to the exact ontology defined in cited documentation.
         columns = ["serial", "name", "altLoc", "resName", "chainID", "resSeq", "iCode", "x", "y", "z",
                    "occupancy", "tempFactor", "element", "charge"]
         df = pd.DataFrame(atoms, columns=columns)
