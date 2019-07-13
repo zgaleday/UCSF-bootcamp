@@ -44,4 +44,3 @@ class PDBLoader(object):
         f.close()
 
 
-load = PDBLoader('1AXC')
