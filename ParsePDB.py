@@ -11,10 +11,11 @@ class ParsePDB(object):
     """
 
 
-    def __init__(self, filepath):
+    def __init__(self, filepath, testing=False, plot=False):
         """Simple constructor just requiring the file path for the pdb file of interest"""
         self.pdb_path = filepath
         self.atoms = self.load_atoms()
+        #TODO: Remove after done debugging
         self.atoms = self.atoms[self.atoms['chainID'] == 'A']
         # Extract relevant column from atom DF
         self.coordinate_df = self.atoms[['name', 'resSeq', 'x', 'y', 'z']]
@@ -27,10 +28,12 @@ class ParsePDB(object):
         # Instantiate a numpy array to hold the b_vectors
         self.w = np.empty((self.c_alpha_df.shape[0] - 1, 3))
         # Calculate the torsion angles for the residues
-        self.calc_w()
-        self.calc_phi()
-        self.calc_psi()
-        self.ramachandran()
+        if not testing:
+            self.calc_w()
+            self.calc_phi()
+            self.calc_psi()
+        if plot:
+            self.ramachandran()
 
 
     def load_atoms(self):
