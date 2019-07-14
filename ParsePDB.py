@@ -13,6 +13,14 @@ class ParsePDB(object):
         """Simple constructor just requiring the file path for the pdb file of interest"""
         self.pdb_path = filepath
         self.atoms = self.load_atoms()
+        # Extract relevant column from atom DF
+        self.coordinate_df = self.atoms[['name', 'resSeq', 'x', 'y', 'z']]
+        # Extract all c_alpha coordinates from main coord df
+        self.c_alpha_df = self.coordinate_df[self.coordinate_df['name'] == 'CA']
+        # Extract all C coords from main coord df
+        self.c_df = self.coordinate_df[self.coordinate_df['name'] == 'C']
+        # Extract all N coords from main coord df
+        self.n_df = self.coordinate_df[self.coordinate_df['name'] == 'N']
 
 
     def load_atoms(self):
@@ -31,9 +39,9 @@ class ParsePDB(object):
         """Class to split ATOM line into parts as defined by documentation cited in class docstring (see above)
         :return list split in appropriate manner with appropriate types
         """
-        return [line[:6], int(line[6:11]), line[12:16], line[16], line[17:20], line[21], int(line[22:26]), line[26],
-                float(line[30: 38]), float(line[38:46]), float(line[46:54]), float(line[54:60]), float(line[60:66]),
-                line[76:78], line[78:80]]
+        return [line[:6].strip(), int(line[6:11]), line[12:16].strip(), line[16], line[17:20].strip(), line[21],
+                int(line[22:26]), line[26], float(line[30: 38]), float(line[38:46]), float(line[46:54]),
+                float(line[54:60]), float(line[60:66]), line[76:78].strip(), line[78:80].strip()]
 
 
     def dump_pdb(self):
