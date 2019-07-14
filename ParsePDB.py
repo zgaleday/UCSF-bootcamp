@@ -1,6 +1,8 @@
 import sys
 import pandas as pd
 import numpy as np
+import matplotlib.pyplot as plt
+from matplotlib.font_manager import FontProperties
 
 class ParsePDB(object):
     """Generic class to parse file of pdb format.
@@ -13,6 +15,7 @@ class ParsePDB(object):
         """Simple constructor just requiring the file path for the pdb file of interest"""
         self.pdb_path = filepath
         self.atoms = self.load_atoms()
+        self.atoms = self.atoms[self.atoms['chainID'] == 'A']
         # Extract relevant column from atom DF
         self.coordinate_df = self.atoms[['name', 'resSeq', 'x', 'y', 'z']]
         # Extract all c_alpha coordinates from main coord df
@@ -27,6 +30,7 @@ class ParsePDB(object):
         self.calc_w()
         self.calc_phi()
         self.calc_psi()
+        self.ramachandran()
 
 
     def load_atoms(self):
@@ -120,6 +124,16 @@ class ParsePDB(object):
         y = np.sum(m1 * n2, axis=1)
         return -np.arctan2(y, x) * 180 / np.pi
 
+    def ramachandran(self):
+        """
+        Plots the torsion anlge as a ramachandran plot.
+        """
+        prop = FontProperties()
+        prop.set_file('resources/STIXGeneral.ttf')
+        ax = plt.scatter(self.phi, self.psi)
+        plt.xlabel(u"\u03C6", fontproperties=prop)
+        plt.ylabel(u"\u03C8", fontproperties=prop)
+        plt.show()
 
 
 pdb = ParsePDB('resources/1AXC.pdb')
