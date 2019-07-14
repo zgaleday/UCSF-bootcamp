@@ -21,6 +21,12 @@ class ParsePDB(object):
         self.c_df = self.coordinate_df[self.coordinate_df['name'] == 'C']
         # Extract all N coords from main coord df
         self.n_df = self.coordinate_df[self.coordinate_df['name'] == 'N']
+        # Instantiate a numpy array to hold the b_vectors
+        self.w = np.empty((self.c_alpha_df.shape[0] - 1, 3))
+        # Calculate the torsion angles for the residues
+        self.calc_w()
+        self.calc_phi()
+        self.calc_psi()
 
 
     def load_atoms(self):
@@ -49,6 +55,71 @@ class ParsePDB(object):
         with open(self.pdb_path) as f:
             for line in f:
                 sys.stdout.write(line)
+
+    def calc_w(self):
+        """
+        Vectorized calculation of the w tortions for the entire protein.
+        Sets self.w to the result of the calculation.
+        Broken into steps for readability.
+        """
+        c_alpha_prev = self.c_alpha_df[['x', 'y', 'z']][:-1].values
+        c_prev = self.c_df[['x', 'y', 'z']][:-1].values
+        n_curr = self.n_df[['x', 'y', 'z']][1:].values
+        c_alpha_curr = self.c_alpha_df[['x', 'y', 'z']][1:].values
+        b0 = c_prev - c_alpha_prev
+        b1 = n_curr - c_prev
+        b2 = c_alpha_curr - n_curr
+        self.w = self._calc_tortion(b0, b1, b2)
+
+    def calc_phi(self):
+        """
+        Vectorized calculation of the phi tortions for the entire protein.
+        Sets self.phi to the result of the calculation.
+        Broken into steps for readability.
+        """
+        c_prev = self.c_df[['x', 'y', 'z']][:-1].values
+        n_curr = self.n_df[['x', 'y', 'z']][1:].values
+        c_alpha_curr = self.c_alpha_df[['x', 'y', 'z']][1:].values
+        c_curr = self.c_df[['x', 'y', 'z']][1:].values
+        b0 = n_curr - c_prev
+        b1 =  c_alpha_curr - n_curr
+        b2 = c_curr - c_alpha_curr
+        self.phi = self._calc_tortion(b0, b1, b2)
+
+    def calc_psi(self):
+        """
+        Vectorized calculation of the psi tortions for the entire protein.
+        Sets self.psi to the result of the calculation.
+        Broken into steps for readability.
+        """
+        n_curr = self.n_df[['x', 'y', 'z']][:-1].values
+        c_alpha_curr = self.c_alpha_df[['x', 'y', 'z']][:-1].values
+        c_curr = self.c_df[['x', 'y', 'z']][:-1].values
+        n_next = self.n_df[['x', 'y', 'z']][1:].values
+        b0 = c_alpha_curr - n_curr
+        b1 = c_curr - c_alpha_curr
+        b2 = n_next - c_curr
+        self.psi = self._calc_tortion(b0, b1, b2)
+
+    def _calc_tortion(self, b0, b1, b2):
+        """
+        Vectorized method to determine the tortion angle give the appropriate b vectors for the desired tortion.
+        :param b0: first vector array (np array of floats)
+        :param b1: second vector array (np array of floats)
+        :param b2: third vector array (np array of floats)
+        :return: A numpy array of the appropriate torsion angles as determined using the angle between the vector planes
+        normals.
+        """
+        n1 = np.cross(b0, b1)
+        n1 /= np.sqrt(np.sum(n1 * n1, axis=1))[:, None]
+        n2 = np.cross(b1, b2)
+        n2 /= np.sqrt(np.sum(n2 * n2, axis=1))[:, None]
+        b1_norm = b1 / np.sqrt(np.sum(b1 * b1, axis=1))[:, None]
+        m1 = np.cross(n1, b1_norm)
+        x = np.sum(n1 * n2, axis=1)
+        y = np.sum(m1 * n2, axis=1)
+        return -np.arctan2(y, x) * 180 / np.pi
+
 
 
 pdb = ParsePDB('resources/1AXC.pdb')
