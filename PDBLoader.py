@@ -28,7 +28,6 @@ class PDBLoader(object):
         Checks that the given PDBID is valid. Raised a ValueError is the given id is not of the expected form or it is
         not a valid url/structural id.
         """
-        print self.structure_path + self.id + ".pdb"
         response = requests.get(self.structure_path + self.id + ".pdb")
         if len(self.id) != 4:
             raise ValueError("PDB ID must be a 4 character string")
