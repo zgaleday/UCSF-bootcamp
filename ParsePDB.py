@@ -1,4 +1,4 @@
-
+import sys
 import pandas as pd
 import numpy as np
 
@@ -34,6 +34,13 @@ class ParsePDB(object):
         return [line[:6], int(line[6:11]), line[12:16], line[16], line[17:20], line[21], int(line[22:26]), line[26],
                 float(line[30: 38]), float(line[38:46]), float(line[46:54]), float(line[54:60]), float(line[60:66]),
                 line[76:78], line[78:80]]
+
+
+    def dump_pdb(self):
+        """Simple method to print out PDB file contents to console"""
+        with open(self.pdb_path) as f:
+            for line in f:
+                sys.stdout.write(line)
 
 
 pdb = ParsePDB('resources/1AXC.pdb')

@@ -20,6 +20,7 @@ class PDBLoader(object):
         if not os.path.exists(self.path):
             raise ValueError("Indicated directory given as 'path' arguement does not exist.")
         self.validate_id()
+        self.out_path = self.path + self.id + ".pdb"
         self.retrieve_pdb()
 
 
@@ -42,8 +43,7 @@ class PDBLoader(object):
         :return: None
         """
         response = requests.get(self.structure_path + self.id + ".pdb")
-        filename = self.path + self.id + ".pdb"
-        f = open(filename, 'wb')
+        f = open(self.out_path, 'wb')
         f.write(response.content)
         f.close()
 

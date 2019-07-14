@@ -11,7 +11,11 @@ def main():
     print(id)
 
     #Download pdb file
-    PDBLoader(id[:4])
+    loader = PDBLoader(id[:4])
+
+    #Load pdb file
+    container = ParsePDB(loader.out_path)
+    container.dump_pdb()
 
 
 main()
