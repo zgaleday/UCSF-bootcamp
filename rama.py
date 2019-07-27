@@ -14,8 +14,18 @@ def main():
     loader = PDBLoader(id[:4])
 
     #Load pdb file
-    container = ParsePDB(loader.out_path)
-    container.dump_pdb()
+    response = raw_input("Generate ramachandran plot? (y/n):").lower().strip()
+    while True:
+        if response == 'y':
+            container = ParsePDB(loader.out_path, plot=True)
+            break
+        elif response == 'n':
+            container = ParsePDB(loader.out_path, plot=False)
+        else:
+            response = raw_input("Invalid response, please enter (y/n):").lower().strip()
+    #Code to dump pdb file to console. Commented out for functionality.
+    # container = ParsePDB(loader.out_path)
+    # container.dump_pdb()
 
 
 main()
