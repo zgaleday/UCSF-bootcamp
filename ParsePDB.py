@@ -11,12 +11,10 @@ class ParsePDB(object):
     """
 
 
-    def __init__(self, filepath, testing=False, plot=False):
+    def __init__(self, filepath, testing=False, plot=True):
         """Simple constructor just requiring the file path for the pdb file of interest"""
         self.pdb_path = filepath
         self.atoms = self.load_atoms()
-        #TODO: Remove after done debugging
-        self.atoms = self.atoms[self.atoms['chainID'] == 'A']
         # Extract relevant column from atom DF
         self.coordinate_df = self.atoms[['name', 'resSeq', 'x', 'y', 'z']]
         # Extract all c_alpha coordinates from main coord df
@@ -69,10 +67,10 @@ class ParsePDB(object):
         Sets self.w to the result of the calculation.
         Broken into steps for readability.
         """
-        c_alpha_prev = self.c_alpha_df[['x', 'y', 'z']][:-1].values
-        c_prev = self.c_df[['x', 'y', 'z']][:-1].values
-        n_curr = self.n_df[['x', 'y', 'z']][1:].values
-        c_alpha_curr = self.c_alpha_df[['x', 'y', 'z']][1:].values
+        c_alpha_prev = self.c_alpha_df[['x', 'y', 'z']][:-2].values
+        c_prev = self.c_df[['x', 'y', 'z']][:-2].values
+        n_curr = self.n_df[['x', 'y', 'z']][1:-1].values
+        c_alpha_curr = self.c_alpha_df[['x', 'y', 'z']][1:-1].values
         b0 = c_prev - c_alpha_prev
         b1 = n_curr - c_prev
         b2 = c_alpha_curr - n_curr
@@ -84,10 +82,10 @@ class ParsePDB(object):
         Sets self.phi to the result of the calculation.
         Broken into steps for readability.
         """
-        c_prev = self.c_df[['x', 'y', 'z']][:-1].values
-        n_curr = self.n_df[['x', 'y', 'z']][1:].values
-        c_alpha_curr = self.c_alpha_df[['x', 'y', 'z']][1:].values
-        c_curr = self.c_df[['x', 'y', 'z']][1:].values
+        c_prev = self.c_df[['x', 'y', 'z']][:-2].values
+        n_curr = self.n_df[['x', 'y', 'z']][1:-1].values
+        c_alpha_curr = self.c_alpha_df[['x', 'y', 'z']][1:-1].values
+        c_curr = self.c_df[['x', 'y', 'z']][1:-1].values
         b0 = n_curr - c_prev
         b1 =  c_alpha_curr - n_curr
         b2 = c_curr - c_alpha_curr
@@ -99,10 +97,10 @@ class ParsePDB(object):
         Sets self.psi to the result of the calculation.
         Broken into steps for readability.
         """
-        n_curr = self.n_df[['x', 'y', 'z']][:-1].values
-        c_alpha_curr = self.c_alpha_df[['x', 'y', 'z']][:-1].values
-        c_curr = self.c_df[['x', 'y', 'z']][:-1].values
-        n_next = self.n_df[['x', 'y', 'z']][1:].values
+        n_curr = self.n_df[['x', 'y', 'z']][1:-1].values
+        c_alpha_curr = self.c_alpha_df[['x', 'y', 'z']][1:-1].values
+        c_curr = self.c_df[['x', 'y', 'z']][1:-1].values
+        n_next = self.n_df[['x', 'y', 'z']][2:].values
         b0 = c_alpha_curr - n_curr
         b1 = c_curr - c_alpha_curr
         b2 = n_next - c_curr
