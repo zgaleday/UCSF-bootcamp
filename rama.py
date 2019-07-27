@@ -21,11 +21,15 @@ def main():
             break
         elif response == 'n':
             container = ParsePDB(loader.out_path, plot=False)
+            print("Dumping pdb file: ")
+            print()
+            container.dump_pdb()
+            break
         else:
             response = raw_input("Invalid response, please enter (y/n):").lower().strip()
     #Code to dump pdb file to console. Commented out for functionality.
     # container = ParsePDB(loader.out_path)
-    # container.dump_pdb()
+    #
 
 
 main()

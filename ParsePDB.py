@@ -137,4 +137,3 @@ class ParsePDB(object):
         plt.show()
 
 
-pdb = ParsePDB('resources/1AXC.pdb')
